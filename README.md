@@ -63,6 +63,19 @@
 }
 ```
 
+### 火山引擎API
+
+多个平台体验下来强推使用字节旗下的[火山引擎](https://www.volcengine.com/)，速度极佳，邀请码：Y85O28LU
+
+```json
+{
+    "deepseekTranslate.authKey": "您的API密钥",
+    "deepseekTranslate.apiType": "openai",
+    "deepseekTranslate.apiBaseUrl": "https://ark.cn-beijing.volces.com/api/v3",
+    "deepseekTranslate.model": "您创建的接入点"
+}
+```
+
 ## 注意事项
 
 1. Ollama模式要求：
