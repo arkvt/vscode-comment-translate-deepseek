@@ -6,7 +6,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Initial release
+- 默认关闭 DeepSeek/OpenAI 兼容接口与 Ollama 请求的思考模式
+- 支持通过 `deepseekTranslate.customHeaders` 合并自定义请求头
 
 
 ## [1.0.2] 2025-1-2

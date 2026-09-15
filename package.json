@@ -60,6 +60,29 @@
             "type": "string",
             "default": "deepseek-chat",
             "description": "使用的AI模型名称（Ollama模式填写本地模型名）"
+          },
+          "deepseekTranslate.thinkingMode": {
+            "type": "string",
+            "enum": [
+              "disabled",
+              "default",
+              "enabled"
+            ],
+            "enumDescriptions": [
+              "关闭思考以降低翻译延迟（默认）",
+              "不发送思考控制参数，保持服务端默认行为",
+              "显式开启思考"
+            ],
+            "default": "disabled",
+            "description": "思考模式。OpenAI兼容接口发送thinking.type，Ollama接口发送think布尔值"
+          },
+          "deepseekTranslate.customHeaders": {
+            "type": "object",
+            "default": {},
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "附加到API请求的自定义请求头；同名请求头（不区分大小写）会覆盖插件默认值"
           }
         }
       }

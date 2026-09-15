@@ -1,6 +1,13 @@
 import axios from 'axios';
 import { workspace, window, Disposable } from 'vscode';
 import { ITranslate, ITranslateOptions } from 'comment-translate-manager';
+import {
+    ApiType,
+    getThinkingRequestFields,
+    mergeRequestHeaders,
+    RequestHeaders,
+    ThinkingMode,
+} from './requestOptions';
 
 const PREFIXCONFIG = 'deepseekTranslate';
 
@@ -26,9 +33,11 @@ export function getConfig<T>(key: string): T | undefined {
 
 interface DeepSeekTranslateOption {
     authKey?: string;
-    apiType?: 'openai' | 'ollama';
+    apiType?: ApiType;
     apiBaseUrl?: string;
     model?: string;
+    thinkingMode?: ThinkingMode;
+    customHeaders?: RequestHeaders;
 }
 
 export class DeepSeekTranslate implements ITranslate {
@@ -57,6 +66,8 @@ export class DeepSeekTranslate implements ITranslate {
             apiType: getConfig<'openai' | 'ollama'>('apiType') || 'openai',
             apiBaseUrl: getConfig<string>('apiBaseUrl') || 'https://api.deepseek.com',
             model: getConfig<string>('model') || 'deepseek-chat',
+            thinkingMode: getConfig<ThinkingMode>('thinkingMode') || 'disabled',
+            customHeaders: getConfig<RequestHeaders>('customHeaders') || {},
         };
         return defaultOption;
     }
@@ -80,7 +91,8 @@ export class DeepSeekTranslate implements ITranslate {
         const body = apiType === 'ollama' ? {
             model: this._defaultOption.model || 'deepseek-chat',
             prompt: `${messages[0].content}\n${messages[1].content}`,
-            stream: false
+            stream: false,
+            ...getThinkingRequestFields(apiType, this._defaultOption.thinkingMode || 'disabled'),
         } : {
             model: this._defaultOption.model || 'deepseek-chat',
             temperature: 0,
@@ -89,14 +101,16 @@ export class DeepSeekTranslate implements ITranslate {
             top_p: 1,
             frequency_penalty: 1,
             presence_penalty: 1,
+            ...getThinkingRequestFields(apiType, this._defaultOption.thinkingMode || 'disabled'),
         };
 
-        const headers = apiType === 'ollama' ? {
-            "Content-Type": "application/json"
+        const defaultHeaders = apiType === 'ollama' ? {
+            ["Content-Type"]: "application/json"
         } : {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this._defaultOption.authKey}`
+            ["Content-Type"]: "application/json",
+            ["Authorization"]: `Bearer ${this._defaultOption.authKey}`
         };
+        const headers = mergeRequestHeaders(defaultHeaders, this._defaultOption.customHeaders);
 
         try {
             let res = await axios.post(url, body, { headers });

@@ -8,6 +8,7 @@
 2. 提供智能的代码注释翻译能力
 3. 自动检测API连接状态
 4. 实时显示翻译服务响应时间
+5. 默认关闭模型思考，并支持自定义请求头
 
 ## 使用要求
 
@@ -29,10 +30,13 @@
 * `deepseekTranslate.apiType`: API类型选择 `openai`(默认)/`ollama`（本地部署）
 * `deepseekTranslate.apiBaseUrl`: API基础地址（默认：`https://api.deepseek.com`，Ollama用户设为`http://localhost:11434`）
 * `deepseekTranslate.model`: 模型名称（默认：`deepseek-chat`，Ollama用户填写本地模型名）
+* `deepseekTranslate.thinkingMode`: 思考模式，支持 `disabled`（默认关闭）、`default`（不发送控制参数）和 `enabled`（显式开启）
+* `deepseekTranslate.customHeaders`: 自定义请求头对象；同名请求头不区分大小写并覆盖插件默认值
 
 提醒：
-- 建议配置、使用deepseek-v3等不包含思维链的模型，响应速度更理想
-- 经测试，v3响应速度远比包含思维链的r1蒸馏模型更快
+
+- 翻译场景默认关闭思考，以减少推理耗时；如模型不支持控制参数，可将 `thinkingMode` 改为 `default`
+- 包含思维链的模型通常响应更慢，可根据质量和速度需求选择是否开启
 - 其他非deepseek系列模型也可以通过这些配置项进行配置
 
 ## 配置示例
@@ -54,6 +58,7 @@
 ```
 
 ### 自定义API端点
+
 ```json
 {
     "deepseekTranslate.authKey": "自定义API密钥",
@@ -62,6 +67,19 @@
     "deepseekTranslate.model": "自定义模型名称"
 }
 ```
+
+### 自定义请求头
+
+```json
+{
+    "deepseekTranslate.customHeaders": {
+        "X-No-Think": "true",
+        "X-Custom-Header": "value"
+    }
+}
+```
+
+自定义请求头会同时应用于翻译请求和配置保存后的连接测试。请不要把包含密钥的工作区设置提交到版本库；如自定义接口不接受插件发送的思考控制字段，可将 `deepseekTranslate.thinkingMode` 设为 `default`。
 
 ### 火山引擎API
 
